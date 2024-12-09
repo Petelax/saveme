@@ -35,5 +35,9 @@ public class Constants {
         public static double LATERAL_DISTANCE = 0; // in - distance between left and right
         public static double FORWARD_OFFSET = 0; // in - distance between the forward center
 
+        public static final int ELEVATOR_HIGH_BASKET = 2500;
+        public static final int TURN_TO_BASKET = 27;
+        public static final int ELEVATOR_LOW_BASKET = 10;
+
     }
 }

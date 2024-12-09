@@ -22,7 +22,7 @@ public class bruh extends OpMode {
     ColorSensor colorSensor;
     BraydenAuto auto = new BraydenAuto();
     LED led;
-
+    boolean extended = false;
     public bruh() {
         super();
     }
@@ -46,6 +46,8 @@ public class bruh extends OpMode {
         telemetry.addData("WristL Position", wristL.getPosition());
         telemetry.addData("WristR Position", wristR.getPosition());
         telemetry.update();
+
+        extended = false;
 
     }
 
@@ -78,7 +80,7 @@ public class bruh extends OpMode {
 
         } else if (gamepad2.left_bumper) {
 
-            erect.setTargetPosition(100);
+            erect.setTargetPosition(10);
             erect.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             if (erect.getCurrentPosition() < 200 && erect.getCurrentPosition() > 50) {
                 erect.setPower(0);
@@ -130,7 +132,7 @@ public class bruh extends OpMode {
             bucket.setPosition(0.75);
             auto.sleep(400);
 
-            erect.setTargetPosition(100);
+            erect.setTargetPosition(25);
             erect.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             erect.setPower(-1);
 
@@ -160,18 +162,19 @@ public class bruh extends OpMode {
             intakeL.setPower(1);
             intakeR.setPower(-1);
         } else {
-            wristR.setPosition(0.25);
-            wristL.setPosition(0.75);
+            wristR.setPosition(0.34);
+            wristL.setPosition(0.80);
             intakeR.setPower(0);
             intakeL.setPower(0);
         }
 
-
-        if (gamepad1.a) {
-            extend.setPosition(0);
-        }
-        else {
-            extend.setPosition(0.23);
+        if(gamepad1.a) {
+           extended = !extended;
+           if(extended) {
+               extend.setPosition(0);
+           } else {
+               extend.setPosition(0.30);
+           }
         }
     }
 }

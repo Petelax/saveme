@@ -16,8 +16,6 @@ public class drive {
     //
     private DcMotor frontLeft0, frontRight1, backLeft2, backRight3;
     private final IMU imu;
-
-
     double deadband = 0.3;
     double deadbandSpeed = 0.05;
     public drive(HardwareMap hardwareMap) {

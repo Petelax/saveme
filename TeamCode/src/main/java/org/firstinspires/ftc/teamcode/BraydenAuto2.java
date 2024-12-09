@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import android.graphics.drawable.GradientDrawable;
-
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -11,9 +9,6 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-
-import java.util.Objects;
 
 @Autonomous(name = "Auto With IMU", group = "teamcode")
 public class BraydenAuto2 extends LinearOpMode {
@@ -22,7 +17,6 @@ public class BraydenAuto2 extends LinearOpMode {
     CRServo intakeL, intakeR;
     Servo extend, wristL, wristR, bucket;
     IMU imu;
-    Orientation angle;
 
     public void drive(int millis, double power) {
         frontLeft.setPower(-power);
@@ -120,11 +114,15 @@ public class BraydenAuto2 extends LinearOpMode {
     }
 
     public void raiseElevator() {
-        elevator.setTargetPosition(2500);
+        extend.setPosition(0);
+
+        sleep(800);
+
+        elevator.setTargetPosition(Constants.MecanumConstants.ELEVATOR_HIGH_BASKET);
         elevator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         elevator.setPower(1);
 
-        if(elevator.getCurrentPosition() >= 2400 && elevator.getCurrentPosition() <= 2500) {
+        if(elevator.getCurrentPosition() >= 2300 && elevator.getCurrentPosition() <= 2500) {
             elevator.setPower(0);
         }
         sleep(1000);
@@ -133,15 +131,33 @@ public class BraydenAuto2 extends LinearOpMode {
 
     public void lowerElevator() {
         bucket.setPosition(0.83);
-        sleep(500);
+        sleep(900);
 
-        elevator.setTargetPosition(100);
+        elevator.setTargetPosition(Constants.MecanumConstants.ELEVATOR_LOW_BASKET);
         elevator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         elevator.setPower(-1);
-        if(elevator.getCurrentPosition() >= 2400 && elevator.getCurrentPosition() <= 2500) {
+        if(elevator.getCurrentPosition() >= 200 && elevator.getCurrentPosition() <= 50) {
             elevator.setPower(0);
         }
-        sleep(1000);
+        sleep(1500);
+    }
+
+    public void putDownIntakeAndExtend() {
+        intakeL.setPower(-1);
+        intakeR.setPower(1);
+        wristL.setPosition(-0.04);
+        wristR.setPosition(1.4);
+        extend.setPosition(0);
+
+        sleep(600);
+    }
+
+    public void extendBackAndPutUpIntake() {
+        intakeL.setPower(0);
+        intakeR.setPower(0);
+        wristL.setPosition(0.80);
+        wristR.setPosition(0.34);
+        extend.setPosition(0.83);
     }
 
     @Override
@@ -175,17 +191,40 @@ public class BraydenAuto2 extends LinearOpMode {
 
         waitForStart();
 
-//        /*Drive forward a tiny bit to get into position to turn toward the basket.*/
-//        drive(500, 0.6);
-
-//        /*Extend the elevator up and raise the basket to score piece.*/
-//        raiseElevator();
-//
-//        /*Lower the elevator and the bucket back to their original position after scoring piece.*/
-//        lowerElevator();
-
         /*Reset the yaw of the Gyro system.*/
         imu.resetYaw();
+
+        /*Drive forward a tiny bit to get into position to turn toward the basket.*/
+        drive(550, 0.5);
+
+        //Extend and put down intake to warm up the extend and wrist servos.
+        putDownIntakeAndExtend();
+
+        turnToAngle(Constants.MecanumConstants.TURN_TO_BASKET, "left", 0.5);
+
+        /*Extend the elevator up and raise the basket to score piece.*/
+        raiseElevator();
+
+        sleep(2000);
+
+        //Raise the intake back up after the elevator back up and extend
+        extendBackAndPutUpIntake();
+
+        /*Lower the elevator and the bucket back to their original position after scoring piece.*/
+        lowerElevator();
+
+        sleep(500);
+
+        //Turn 70 degrees to the left to align robot with the first piece.
+        turnToAngle(70, "left", 0.3);
+
+        //Puts down the intake and extends the arm to grab the first piece.
+        putDownIntakeAndExtend();
+
+        sleep(800);
+
+        //Drive to the first piece.
+        drive(400, -0.5);
 
         /*Constantly update the Telemetry with the Gyro system's current angle to calibrate the
         * the robot's positioning on the field.*/
@@ -193,6 +232,7 @@ public class BraydenAuto2 extends LinearOpMode {
             telemetry.addData("Imu Angle", imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
             telemetry.update();
         }
-
     }
 }
+
+
