@@ -158,6 +158,8 @@ public class BraydenAuto2 extends LinearOpMode {
         wristL.setPosition(0.80);
         wristR.setPosition(0.34);
         extend.setPosition(0.83);
+
+        sleep(600);
     }
 
     @Override
