@@ -158,6 +158,12 @@ public class BraydenAuto2 extends LinearOpMode {
         wristL.setPosition(0.80);
         wristR.setPosition(0.34);
         extend.setPosition(0.83);
+        sleep(700);
+        intakeL.setPower(1);
+        intakeR.setPower(-1);
+        sleep(600);
+        intakeL.setPower(0);
+        intakeR.setPower(0);
     }
 
     @Override
@@ -224,7 +230,26 @@ public class BraydenAuto2 extends LinearOpMode {
         sleep(800);
 
         //Drive to the first piece.
-        drive(400, -0.5);
+        drive(500, -0.5);
+
+        //Extend back and put up the intake after grabbing first piece.
+        extendBackAndPutUpIntake();
+
+        //Drive back to the basket.
+        drive(500, 0.5);
+
+        //Turn to basket angle to align with basket.
+        turnToAngle(Constants.MecanumConstants.TURN_TO_BASKET, "right", 0.5);
+
+        //Raise the elevator to score second piece.
+        raiseElevator();
+
+        sleep(2000);
+
+        //Lower the elevator after we score second piece.
+        lowerElevator();
+        
+        sleep(500);
 
         /*Constantly update the Telemetry with the Gyro system's current angle to calibrate the
         * the robot's positioning on the field.*/
