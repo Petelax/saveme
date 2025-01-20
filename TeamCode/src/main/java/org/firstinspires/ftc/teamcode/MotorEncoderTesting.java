@@ -38,7 +38,7 @@ public class MotorEncoderTesting extends LinearOpMode {
         rightBack = hardwareMap.get(DcMotor.class, "right_back");
         leftFront = hardwareMap.get(DcMotor.class, "left_front");
         leftBack = hardwareMap.get(DcMotor.class, "left_back");
-
+//
         leftFront.setDirection(DcMotor.Direction.REVERSE);
         leftBack.setDirection(DcMotor.Direction.REVERSE);
 
