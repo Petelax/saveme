@@ -7,6 +7,7 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.ConstantsPackage.Constants;
@@ -15,6 +16,7 @@ import org.firstinspires.ftc.teamcode.TheoCode.SparkFunOTOSDrive;
 
 public class LocalizationTest extends LinearOpMode {
     Servo leftEx, rightEX, gear;
+    DcMotor elevator;
     @Override
     public void runOpMode() throws InterruptedException {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
@@ -22,6 +24,7 @@ public class LocalizationTest extends LinearOpMode {
         leftEx = hardwareMap.get(Servo.class, "leftEx");
         rightEX = hardwareMap.get(Servo.class, "rightEX");
         gear = hardwareMap.get(Servo.class, "gear");
+        elevator = hardwareMap.get(DcMotor.class, "erect");
 
 //        SparkFunOTOSDrive drive = new SparkFunOTOSDrive(hardwareMap, new Pose2d(41.5, 63, Math.PI));
 
@@ -31,6 +34,9 @@ public class LocalizationTest extends LinearOpMode {
 
         leftEx.setPosition(Constants.ServoConstants.maxExtension);
         rightEX.setPosition(Constants.ServoConstants.maxExtension);
+
+        elevator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        elevator.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         waitForStart();
 
@@ -48,6 +54,7 @@ public class LocalizationTest extends LinearOpMode {
             telemetry.addData("x", drive.pose.position.x);
             telemetry.addData("y", drive.pose.position.y);
             telemetry.addData("heading (deg)", Math.toDegrees(drive.pose.heading.toDouble()));
+            telemetry.addData("Elevator Position", elevator.getCurrentPosition());
             telemetry.update();
 
             TelemetryPacket packet = new TelemetryPacket();

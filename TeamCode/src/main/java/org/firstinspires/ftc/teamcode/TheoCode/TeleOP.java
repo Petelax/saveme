@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.TheoCode;
 
+import static java.lang.Thread.sleep;
+
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
@@ -86,6 +88,40 @@ public class TeleOP extends OpMode {
             intakePhase = 0;
             huskyLens.selectAlgorithm(HuskyLens.Algorithm.OBJECT_CLASSIFICATION);
         }
+        
+        if(driver.wasJustPressed(GamepadKeys.Button.DPAD_DOWN)) {
+            erect.setTargetPosition(-3000);
+            erect.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            erect.setPower(1);
+
+            telemetry.addData("erect Position", erect.getCurrentPosition());
+            telemetry.update();
+
+            if(erect.getCurrentPosition() <= -3200 &&  erect.getCurrentPosition() > -2800) {
+                erect.setPower(0);
+                bust.setPosition(0);
+                try {
+                    Thread.sleep(800);
+                } catch(Exception e) {
+                    System.out.println("Exception in sleeping with bucket.");
+                }
+                bust.setPosition(1);
+                try {
+                    Thread.sleep(600);
+                } catch(Exception e) {
+                    System.out.println("Exception in sleeping with bucket.");
+                }
+            }
+
+            erect.setTargetPosition(-100);
+            erect.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            erect.setPower(-1);
+
+            if(erect.getCurrentPosition() >= -50 && erect.getCurrentPosition() < -120) {
+                erect.setPower(0);
+            }
+
+        }
 
         if(intaking) {
 
@@ -117,26 +153,26 @@ public class TeleOP extends OpMode {
                         spin.setPosition(spin.getPosition() + 0.2);
                     }
 
-                    if(huskyLens.blocks().length > 0){
-                        if(huskyLens.blocks()[0].id == 1) {
-                            telemetry.addData("Piece", "is VERTICAL.");
-                            spin.setPosition(0.5);
+//                    if(huskyLens.blocks().length > 0){
+//                        if(huskyLens.blocks()[0].id == 1) {
+//                            telemetry.addData("Piece", "is VERTICAL.");
+//                            spin.setPosition(0.5);
+////                        }
+////                        else if(huskyLens.blocks()[0].id == 2) {
+////                            telemetry.addData("Piece", "is DIAGONAL RIGHT.");
+////                            spin.setPosition(0.65);
+//                        } else if(huskyLens.blocks()[0].id == 3) {
+//                            telemetry.addData("Piece", "is HORIZONTAL.");
+//                            spin.setPosition(0.85);
+////                        }
+////                        else if(huskyLens.blocks()[0].id == 4) {
+////                            telemetry.addData("Piece", "is diagonal LEFT.");
+////                           // spin.setPosition(0.35);
+//                        } else {
+//                            telemetry.addLine("NOTHING TO SEE");
 //                        }
-//                        else if(huskyLens.blocks()[0].id == 2) {
-//                            telemetry.addData("Piece", "is DIAGONAL RIGHT.");
-//                            spin.setPosition(0.65);
-                        } else if(huskyLens.blocks()[0].id == 3) {
-                            telemetry.addData("Piece", "is HORIZONTAL.");
-                            spin.setPosition(0.85);
-//                        }
-//                        else if(huskyLens.blocks()[0].id == 4) {
-//                            telemetry.addData("Piece", "is diagonal LEFT.");
-//                           // spin.setPosition(0.35);
-                        } else {
-                            telemetry.addLine("NOTHING TO SEE");
-                        }
-
-                    }
+//
+//                    }
 
                     if(firstExtension) {
                         clawIsOpen = true;
@@ -152,7 +188,7 @@ public class TeleOP extends OpMode {
                     break;
                 case 2:
                     setExtension(Constants.ServoConstants.maxExtension);
-                    setWrist(Constants.ServoConstants.wristHover);
+                    setWrist(Constants.ServoConstants.wristHover - 0.5);
                     gear.setPosition(Constants.ServoConstants.gearDownDown);
                     clawIsOpen = true;
                     intakePhase += intakeTimer.seconds() > 0.25 ? 1 : 0;
@@ -207,7 +243,8 @@ public class TeleOP extends OpMode {
             spin.setPosition(Constants.ServoConstants.spinCenter);
 
             if(driver.wasJustPressed(GamepadKeys.Button.Y)) {
-                clawIsOpen = !clawIsOpen;
+//                clawIsOpen = !clawIsOpen;
+                spin.setPosition(spin.getPosition()+0.05);
             }
 
             if(clawIsOpen) {
@@ -242,9 +279,9 @@ public class TeleOP extends OpMode {
 //            gear.setPosition(gear.getPosition()-0.05);
 //        }
 //
-//        if(driver.wasJustPressed(GamepadKeys.Button.A)) {
-//            spin.setPosition(spin.getPosition()+0.05);
-//        }
+        if(driver.wasJustPressed(GamepadKeys.Button.A)) {
+            spin.setPosition(spin.getPosition()+0.05);
+        }
 //
 //        if(driver.wasJustPressed(GamepadKeys.Button.B)) {
 //            spin.setPosition(spin.getPosition()-0.05);

@@ -20,7 +20,7 @@ import org.firstinspires.ftc.teamcode.TheoCode.MecanumDrive;
 * or @Teleop(name = "", group = "") annotation to make the Driver Station App decide
 * whether your program is going to be for the Auto or Teleop periods.*/
 @Autonomous(name = "TestingClass", group = "teamcode")
-public class TestingClass extends LinearOpMode {
+public class ExampleClass extends LinearOpMode {
 
     public static class Constants {
         static class MotorConstants {

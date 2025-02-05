@@ -308,7 +308,7 @@ public class NEW extends LinearOpMode {
                 .turnTo(-64)
                 .waitSeconds(2)
                 .build();
-        Action SubmersableIntake = tab1.endTrajectory().fresh()
+        Action SubmersibleIntake = tab1.endTrajectory().fresh()
                 .strafeTo(new Vector2d(49.5, 52.5))
                 .turnTo(Math.toRadians(90))
                 .waitSeconds(2)
