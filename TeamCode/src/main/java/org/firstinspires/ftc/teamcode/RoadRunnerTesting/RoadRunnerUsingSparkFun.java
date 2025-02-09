@@ -89,18 +89,11 @@ public class RoadRunnerUsingSparkFun extends LinearOpMode {
         public void raiseOrLower(String position) {
             switch(position) {
                 case "raise":
-                    elevator.setTargetPosition(-2900);
+                    elevator.setTargetPosition(-2960); //-2790
                     elevator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     elevator.setPower(1);
 
-                    telemetry.addData("Elevator Position", elevator.getCurrentPosition());
-                    telemetry.update();
-
-                    sleep(1400);
-
-//                        if(elevator.getCurrentPosition() <= -3200 &&  elevator.getCurrentPosition() > -2800) {
-//                            elevator.setPower(0);
-//                        }
+                    sleep(1500);
 
                     bucketServo.setPosition(0);
 
@@ -114,15 +107,11 @@ public class RoadRunnerUsingSparkFun extends LinearOpMode {
 
                     sleep(800);
 
-                    elevator.setTargetPosition(-50);
+                    elevator.setTargetPosition(-110);
                     elevator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     elevator.setPower(-1);
 
                     sleep(1400);
-
-                    if(elevator.getCurrentPosition() < -100 && elevator.getCurrentPosition() > -50) {
-                        elevator.setPower(0);
-                    }
 
                     break;
             }
@@ -187,7 +176,7 @@ public class RoadRunnerUsingSparkFun extends LinearOpMode {
                    telemetry.addData("Block X", block.x);
                    telemetry.update();
 
-                   if(block.x < 140) {
+                   if(block.x < 160) { //140
                        setPower(-0.34, 0.34, 0.34, -0.34);
                    } else if(block.x > 200) {
                        setPower(0.34, -0.34, -0.34, 0.34);
@@ -208,20 +197,26 @@ public class RoadRunnerUsingSparkFun extends LinearOpMode {
                      setPower(0, 0, 0, 0);
                      intake.setPosition(Constants.ServoConstants.clawOpen);
                      sleep(500);
+
                      gear.setPosition(Constants.ServoConstants.gearDownDown);
                      sleep(500);
+
                      leftWrist.setPosition(Constants.ServoConstants.wristDown);
                      rightWrist.setPosition(Constants.ServoConstants.wristDown);
                      sleep(500);
+
                      intake.setPosition(Constants.ServoConstants.clawClosed);
                      sleep(500);
+
                      leftWrist.setPosition(Constants.ServoConstants.wristTransfer);
                      rightWrist.setPosition(Constants.ServoConstants.wristTransfer);
                      sleep(200);
+
                      leftExtend.setPosition(Constants.ServoConstants.minExtension);
                      rightExtend.setPosition(Constants.ServoConstants.minExtension);
                      gear.setPosition(Constants.ServoConstants.gearTransfer);
                      sleep(500);
+
                      intake.setPosition(Constants.ServoConstants.clawOpen);
 
                      return false;
@@ -294,24 +289,24 @@ public class RoadRunnerUsingSparkFun extends LinearOpMode {
         waitForStart();
 
         Action goToBasket = tab1.endTrajectory().fresh()
-                .strafeTo(new Vector2d(50.6544, 54.9196))
+//                .strafeTo(new Vector2d(51.6544, 54.9196)) //Y: 54.9196, X: 50.6544
+                .strafeTo(new Vector2d(51.0869, 51.6396))
                 .turnTo(-141)
                 .build();
 
         Action goToFirstPiece = tab1.endTrajectory().fresh()
                 .strafeTo(new Vector2d(39, 53), new MinVelConstraint(List.of((MecanumDrive.kinematics.new WheelVelConstraint(80)))))
-//                .turnTo(-108.2257)
-                .turnTo(-87)
+                .turnTo(-104.2257) //-108.2257
                 .build();
 
 //        new Vector2d(39.1923, 55.0998)
 
         Action goToSecondPiece = tab1.endTrajectory().fresh()
-                .splineTo(new Vector2d(0, 0), Math.toRadians(35))
+                .strafeTo(new Vector2d(0, 0))
                 .build();
 
         Action goToThirdPiece = tab1.endTrajectory().fresh()
-                .splineTo(new Vector2d(0, 0), Math.toRadians(35))
+                .strafeTo(new Vector2d(0, 0))
                 .build();
 
         Actions.runBlocking(
@@ -324,5 +319,10 @@ public class RoadRunnerUsingSparkFun extends LinearOpMode {
                         goToBasket
                 )
         );
+
+//        while(opModeIsActive()) {
+//            telemetry.addData("Elevator", elevator.getCurrentPosition());
+//            telemetry.update();
+//        }
     }
 }

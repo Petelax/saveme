@@ -62,11 +62,21 @@ public class TeleOP extends OpMode {
         intakeTimer = new ElapsedTime();
         intakePhase = 10;
 
-        gear.setPosition(Constants.ServoConstants.gearTransfer);
+        gear.setPosition(Constants.ServoConstants.gearDown);
         setWrist(Constants.ServoConstants.wristTransfer);
         setExtension(Constants.ServoConstants.minExtension);
         spin.setPosition(Constants.ServoConstants.spinCenter);
         intake.setPosition(Constants.ServoConstants.clawClosed);
+
+        erect.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        erect.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        erect.setTargetPosition(-122);
+        erect.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        erect.setPower(1);
+
+        if(erect.getCurrentPosition() >= -122) {
+            erect.setPower(0);
+        }
     }
 
     @Override
@@ -90,7 +100,7 @@ public class TeleOP extends OpMode {
         }
         
         if(driver.wasJustPressed(GamepadKeys.Button.DPAD_DOWN)) {
-            erect.setTargetPosition(-3000);
+            erect.setTargetPosition(-2800);
             erect.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             erect.setPower(1);
 
@@ -299,18 +309,17 @@ public class TeleOP extends OpMode {
         Drive.periodic(telemetry);
 
         if (gamepad1.right_bumper) {
-            erect.setTargetPosition(-2900);
+            erect.setTargetPosition(-2700);
             erect.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             if (erect.getCurrentPosition() < -3000 && erect.getCurrentPosition() > -2800) {
                 erect.setPower(0);
             } else {
                 erect.setPower(-1);
-
             }
 
         } else if (gamepad1.left_bumper) {
 
-            erect.setTargetPosition(-50);
+            erect.setTargetPosition(-120);
             erect.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             if (erect.getCurrentPosition() < -100 && erect.getCurrentPosition() > -40) {
                 erect.setPower(0);
