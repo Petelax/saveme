@@ -84,15 +84,15 @@ public class MecanumDrive {
         // path profile parameters (in inches)
         public double maxWheelVel = 50;
         public double minProfileAccel = -30;
-        public double maxProfileAccel = 50;
+        public double maxProfileAccel = 35; //50
 
         // turn profile parameters (in radians)
         public double maxAngVel = Math.PI; // shared with path
         public double maxAngAccel = Math.PI;
 
         // path controller gains
-        public double axialGain = 5; //Original is 5.
-        public double lateralGain = 6; //Original gain is 6.
+        public double axialGain = 3.5; //Original is 5.
+        public double lateralGain = 4; //Original gain is 6.
         public double headingGain = 6; // shared with turn
 
         public double axialVelGain = 0.0;
@@ -147,8 +147,8 @@ public class MecanumDrive {
 
             imu = lazyImu.get();
 
-//             TODO: reverse encoders if needed
-//               leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
+            // TODO: reverse encoders if needed
+            //   leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
         }
 
         @Override

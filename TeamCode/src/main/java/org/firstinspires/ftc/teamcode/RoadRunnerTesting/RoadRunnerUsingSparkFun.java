@@ -176,12 +176,12 @@ public class RoadRunnerUsingSparkFun extends LinearOpMode {
                    telemetry.addData("Block X", block.x);
                    telemetry.update();
 
-                   if(block.x < 160) { //140
-                       setPower(-0.34, 0.34, 0.34, -0.34);
+                   if(block.x < 70) { //140
+                       setPower(-0.28, 0.28, 0.28, -0.28); //0.34
                    } else if(block.x > 200) {
-                       setPower(0.34, -0.34, -0.34, 0.34);
+                       setPower(0.28, -0.28, -0.28, 0.28);
                    } else {
-                     setPower(0.4,0.4, 0.4, 0.4);
+                     setPower(0.3,0.3, 0.3, 0.3);
 
                      while(opModeIsActive()) {
                        if(huskyLens.blocks().length > 0)  {
@@ -254,6 +254,16 @@ public class RoadRunnerUsingSparkFun extends LinearOpMode {
         elevator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         elevator.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
+        leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
         leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
         leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
         leftExtend.setDirection(Servo.Direction.REVERSE);
@@ -290,23 +300,23 @@ public class RoadRunnerUsingSparkFun extends LinearOpMode {
 
         Action goToBasket = tab1.endTrajectory().fresh()
 //                .strafeTo(new Vector2d(51.6544, 54.9196)) //Y: 54.9196, X: 50.6544
-                .strafeTo(new Vector2d(51.0869, 51.6396))
+                .strafeTo(new Vector2d(49.6812, 51.4353))
                 .turnTo(-141)
                 .build();
 
         Action goToFirstPiece = tab1.endTrajectory().fresh()
-                .strafeTo(new Vector2d(39, 53), new MinVelConstraint(List.of((MecanumDrive.kinematics.new WheelVelConstraint(80)))))
-                .turnTo(-104.2257) //-108.2257
+                .strafeTo(new Vector2d(39, 53))
+                .turnTo(-108.2257)
                 .build();
 
 //        new Vector2d(39.1923, 55.0998)
 
         Action goToSecondPiece = tab1.endTrajectory().fresh()
-                .strafeTo(new Vector2d(0, 0))
+                .splineTo(new Vector2d(0, 0), Math.toRadians(35))
                 .build();
 
         Action goToThirdPiece = tab1.endTrajectory().fresh()
-                .strafeTo(new Vector2d(0, 0))
+                .splineTo(new Vector2d(0, 0), Math.toRadians(35))
                 .build();
 
         Actions.runBlocking(

@@ -32,6 +32,7 @@ public class TeleOP extends OpMode {
 
     ElapsedTime intakeTimer;
     int intakePhase;
+    boolean intakeOpen = false;;
 
     public TeleOP() {
             super();
@@ -83,9 +84,12 @@ public class TeleOP extends OpMode {
     public void loop() {
 
         if(gamepad1.y) {
-            bust.setPosition(0);
-        } else {
-            bust.setPosition(1);
+            intakeOpen = !intakeOpen;
+            if(intakeOpen) {
+                intake.setPosition(Constants.ServoConstants.clawOpen);
+            } else {
+                intake.setPosition(Constants.ServoConstants.clawClosed);
+            }
         }
 
         //Reads buttons
