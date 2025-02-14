@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.TheoCode;
 
-import static java.lang.Thread.sleep;
-
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
@@ -12,6 +10,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.ConstantsPackage.Constants;
+
+import java.util.concurrent.CompletableFuture;
 
 
 @TeleOp(name = "basicteliop", group = "teamcode")
@@ -32,7 +32,9 @@ public class TeleOP extends OpMode {
 
     ElapsedTime intakeTimer;
     int intakePhase;
-    boolean intakeOpen = false;;
+    boolean intakeOpen = false;
+    boolean isNotRaising = true;
+    boolean notCenter = false;
 
     public TeleOP() {
             super();
@@ -83,14 +85,12 @@ public class TeleOP extends OpMode {
     @Override
     public void loop() {
 
-        if(gamepad1.y) {
-            intakeOpen = !intakeOpen;
-            if(intakeOpen) {
-                intake.setPosition(Constants.ServoConstants.clawOpen);
-            } else {
-                intake.setPosition(Constants.ServoConstants.clawClosed);
-            }
+        if(driver.wasJustPressed(GamepadKeys.Button.Y)) {
+            clawIsOpen = !clawIsOpen;
+            telemetry.addData("Claw Open", clawIsOpen);
+            telemetry.update();
         }
+
 
         //Reads buttons
         driver.readButtons();
@@ -159,34 +159,21 @@ public class TeleOP extends OpMode {
                     setWrist(Constants.ServoConstants.wristHover);
                     gear.setPosition(Constants.ServoConstants.gearDown);
 
-                    if(driver.wasJustPressed(GamepadKeys.Button.DPAD_LEFT) && spin.getPosition() >= 0.1){
-                        spin.setPosition(spin.getPosition() - 0.2);
-                    }
-
-                    if(driver.wasJustPressed(GamepadKeys.Button.DPAD_RIGHT) && spin.getPosition() <= 0.9){
-                        spin.setPosition(spin.getPosition() + 0.2);
-                    }
-
-//                    if(huskyLens.blocks().length > 0){
-//                        if(huskyLens.blocks()[0].id == 1) {
-//                            telemetry.addData("Piece", "is VERTICAL.");
-//                            spin.setPosition(0.5);
-////                        }
-////                        else if(huskyLens.blocks()[0].id == 2) {
-////                            telemetry.addData("Piece", "is DIAGONAL RIGHT.");
-////                            spin.setPosition(0.65);
-//                        } else if(huskyLens.blocks()[0].id == 3) {
-//                            telemetry.addData("Piece", "is HORIZONTAL.");
-//                            spin.setPosition(0.85);
-////                        }
-////                        else if(huskyLens.blocks()[0].id == 4) {
-////                            telemetry.addData("Piece", "is diagonal LEFT.");
-////                           // spin.setPosition(0.35);
-//                        } else {
-//                            telemetry.addLine("NOTHING TO SEE");
-//                        }
-//
+//                    if(driver.wasJustPressed(GamepadKeys.Button.DPAD_LEFT) && spin.getPosition() >= 0.1){
+//                        spin.setPosition(spin.getPosition() - 0.2);
 //                    }
+//
+//                    if(driver.wasJustPressed(GamepadKeys.Button.DPAD_RIGHT) && spin.getPosition() <= 0.9){
+//                        spin.setPosition(spin.getPosition() + 0.2);
+//                    }
+
+                    if(driver.wasJustPressed(GamepadKeys.Button.Y)) {
+                        spin.setPosition(spin.getPosition() + 0.05);
+                    }
+
+                    if(driver.wasJustPressed(GamepadKeys.Button.X)) {
+                        spin.setPosition(spin.getPosition() -0.05);
+                    }
 
                     if(firstExtension) {
                         clawIsOpen = true;
@@ -202,7 +189,7 @@ public class TeleOP extends OpMode {
                     break;
                 case 2:
                     setExtension(Constants.ServoConstants.maxExtension);
-                    setWrist(Constants.ServoConstants.wristHover - 0.5);
+                    setWrist(Constants.ServoConstants.wristHover - 0.25);
                     gear.setPosition(Constants.ServoConstants.gearDownDown);
                     clawIsOpen = true;
                     intakePhase += intakeTimer.seconds() > 0.25 ? 1 : 0;
@@ -252,14 +239,10 @@ public class TeleOP extends OpMode {
 
             firstExtension = true;
             setExtension(Constants.ServoConstants.minExtension);
-            setWrist(Constants.ServoConstants.wristTransfer);
-            gear.setPosition(Constants.ServoConstants.gearTransfer);
-            spin.setPosition(Constants.ServoConstants.spinCenter);
-
-            if(driver.wasJustPressed(GamepadKeys.Button.Y)) {
-//                clawIsOpen = !clawIsOpen;
-                spin.setPosition(spin.getPosition()+0.05);
+            if(isNotRaising) {
+                setWrist(Constants.ServoConstants.wristTransfer);
             }
+            gear.setPosition(Constants.ServoConstants.gearTransfer);
 
             if(clawIsOpen) {
                 intake.setPosition(Constants.ServoConstants.clawOpen);
@@ -313,24 +296,38 @@ public class TeleOP extends OpMode {
         Drive.periodic(telemetry);
 
         if (gamepad1.right_bumper) {
-            erect.setTargetPosition(-2700);
-            erect.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            if (erect.getCurrentPosition() < -3000 && erect.getCurrentPosition() > -2800) {
-                erect.setPower(0);
-            } else {
-                erect.setPower(-1);
-            }
+            isNotRaising = false;
+            CompletableFuture.runAsync(() -> {
+//                gear.setPosition(Constants.ServoConstants.gearDown);
+                leftWR.setPosition(Constants.ServoConstants.wristHover);
+                rightWR.setPosition(Constants.ServoConstants.wristHover);
+                try {
+                    Thread.sleep(700);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
 
-        } else if (gamepad1.left_bumper) {
-
-            erect.setTargetPosition(-120);
-            erect.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            if (erect.getCurrentPosition() < -100 && erect.getCurrentPosition() > -40) {
-                erect.setPower(0);
-            } else {
+                erect.setTargetPosition(-3000);
+                erect.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 erect.setPower(1);
+            });
+        } else if (gamepad1.left_bumper) {
+            //Position: -120
+            CompletableFuture.runAsync(() -> {
+                erect.setTargetPosition(-100);
+                erect.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                erect.setPower(-1);
 
-            }
+                while(true) {
+                    if(erect.getCurrentPosition() >= erect.getTargetPosition()) {
+                        break;
+                    }
+                }
+
+                gear.setPosition(Constants.ServoConstants.gearTransfer);
+                isNotRaising = true;
+            });
+
         }
 
         if(gamepad1.x) {
@@ -360,8 +357,6 @@ public class TeleOP extends OpMode {
         telemetry.addData("EXTENSION POSITION", leftEX.getPosition());
         telemetry.addData("INTAKE PHASES", intakePhase);
         telemetry.addData("UNTAKE TIMER", intakeTimer.seconds());
-
-
         telemetry.addData("erect Position", erect.getCurrentPosition());
         telemetry.update();
 

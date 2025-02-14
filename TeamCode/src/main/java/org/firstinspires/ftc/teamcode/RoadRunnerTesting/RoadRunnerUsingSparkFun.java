@@ -5,15 +5,9 @@ import androidx.annotation.NonNull;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
-import com.acmerobotics.roadrunner.AngularVelConstraint;
-import com.acmerobotics.roadrunner.MinVelConstraint;
 import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.ProfileAccelConstraint;
-import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
-import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
-import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -21,15 +15,9 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.sun.tools.javac.util.List;
 
 import org.firstinspires.ftc.teamcode.ConstantsPackage.Constants;
-import org.firstinspires.ftc.teamcode.TheoCode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.TheoCode.SparkFunOTOSDrive;
-
-import java.util.Arrays;
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 
 @Autonomous(name = "RoadRunnerUsingSparkFun", group = "teamcode")
 public class RoadRunnerUsingSparkFun extends LinearOpMode {
@@ -167,6 +155,7 @@ public class RoadRunnerUsingSparkFun extends LinearOpMode {
             rightExtend.setPosition(1);
             leftExtend.setPosition(1);
             gear.setPosition(Constants.ServoConstants.gearDown);
+            intake.setPosition(Constants.ServoConstants.clawOpen);
 
             HuskyLens.Block block;
 
@@ -174,11 +163,14 @@ public class RoadRunnerUsingSparkFun extends LinearOpMode {
                if(huskyLens.blocks().length > 0) {
                    block = huskyLens.blocks()[0];
                    telemetry.addData("Block X", block.x);
+                   telemetry.addData("Block Y:", block.y);
                    telemetry.update();
 
-                   if(block.x < 70) { //140
-                       setPower(-0.28, 0.28, 0.28, -0.28); //0.34
-                   } else if(block.x > 200) {
+                   sleep(5000);
+
+                   if(block.x < 160) { //140//0.34
+                       setPower(-0.28, 0.28, 0.28, -0.28);
+                   } else if(block.x > 170) {
                        setPower(0.28, -0.28, -0.28, 0.28);
                    } else {
                      setPower(0.3,0.3, 0.3, 0.3);
@@ -188,15 +180,34 @@ public class RoadRunnerUsingSparkFun extends LinearOpMode {
                            block = huskyLens.blocks()[0];
                            telemetry.addData("Y", block.y);
                            telemetry.update();
-                           if(block.y > 100) {
+                           if(block.y > 180) {
                                break;
                            }
                        }
                      }
 
                      setPower(0, 0, 0, 0);
-                     intake.setPosition(Constants.ServoConstants.clawOpen);
-                     sleep(500);
+
+                     while(opModeIsActive()) {
+                         if(huskyLens.blocks().length > 0) {
+                             block = huskyLens.blocks().length == 0 ? null : huskyLens.blocks()[0];
+
+                             assert block != null;
+                             if(block.x < 152) {
+                                 rightFront.setPower(0.28);
+                                 rightBack.setPower(0.28);
+                                 leftFront.setPower(-0.28);
+                                 leftBack.setPower(-0.28);
+                             } else if(block.x > 162) {
+                                 rightFront.setPower(-0.28);
+                                 rightBack.setPower(-0.28);
+                                 leftFront.setPower(0.28);
+                                 leftBack.setPower(0.28);
+                             } else {
+                                 break;
+                             }
+                         }
+                     }
 
                      gear.setPosition(Constants.ServoConstants.gearDownDown);
                      sleep(500);
@@ -219,7 +230,7 @@ public class RoadRunnerUsingSparkFun extends LinearOpMode {
 
                      intake.setPosition(Constants.ServoConstants.clawOpen);
 
-                     return false;
+                     break;
                    }
                }
             }
@@ -300,12 +311,14 @@ public class RoadRunnerUsingSparkFun extends LinearOpMode {
 
         Action goToBasket = tab1.endTrajectory().fresh()
 //                .strafeTo(new Vector2d(51.6544, 54.9196)) //Y: 54.9196, X: 50.6544
-                .strafeTo(new Vector2d(49.6812, 51.4353))
+//                .strafeTo(new Vector2d(49.6812, 51.4353))
+                .strafeTo(new Vector2d(47, 51))
                 .turnTo(-141)
                 .build();
 
         Action goToFirstPiece = tab1.endTrajectory().fresh()
                 .strafeTo(new Vector2d(39, 53))
+                .waitSeconds(0.5)
                 .turnTo(-108.2257)
                 .build();
 
@@ -319,20 +332,89 @@ public class RoadRunnerUsingSparkFun extends LinearOpMode {
                 .splineTo(new Vector2d(0, 0), Math.toRadians(35))
                 .build();
 
-        Actions.runBlocking(
-                new SequentialAction(
-                        goToBasket,
-                        raiseElevator,
-                        lowerElevator,
-                        goToFirstPiece,
-                        searchForPiece,
-                        goToBasket
-                )
-        );
+//        Actions.runBlocking(
+//                new SequentialAction(
+//                        goToBasket,
+//                        raiseElevator,
+//                        lowerElevator,
+//                        goToFirstPiece,
+//                        searchForPiece,
+//                        goToBasket
+//                )
+//        );
 
-//        while(opModeIsActive()) {
-//            telemetry.addData("Elevator", elevator.getCurrentPosition());
-//            telemetry.update();
-//        }
+        while(opModeIsActive()) {
+            if(huskyLens.blocks().length > 0) {
+                HuskyLens.Block block = huskyLens.blocks().length == 0 ? null : huskyLens.blocks()[0];
+                assert block != null;
+                telemetry.addData("Block X", block.x);
+
+               if(block.x < 160) {
+                   telemetry.addData("Block", "is too far to the left.");
+//                   leftFront.setPower(-0.35);
+//                   rightFront.setPower(0.35);
+//                   leftBack.setPower(0.35);
+//                   rightBack.setPower(-0.35);
+               } else if(block.x > 170) {
+                   telemetry.addData("Block", "is too far to the right.");
+//                   leftFront.setPower(0.35);
+//                   rightFront.setPower(-0.35);
+//                   leftBack.setPower(-0.35);
+//                   rightBack.setPower(0.35);
+               } else if(block.x > 160 && block.x < 170) {
+//                   leftWrist.setPosition(0.27);
+//                   rightWrist.setPosition(0.27);
+                   telemetry.addData("Block is centered! --> " + block.x, "Second Alignment beginning shortly.");
+                   telemetry.update();
+                   sleep(5000);
+
+                   while(opModeIsActive()) {
+                       if(huskyLens.blocks().length > 0) {
+                           block = huskyLens.blocks().length == 0 ? null : huskyLens.blocks()[0];
+                           assert block != null;
+                           telemetry.addData("Block Pos", block.y);
+                           telemetry.update();
+                           if(block.y > 200  ) {
+                               break;
+                           }
+                       }
+                   }
+
+                   while(opModeIsActive()) {
+                       if(huskyLens.blocks().length > 0) {
+                           block = huskyLens.blocks().length ==  0 ? null : huskyLens.blocks()[0];
+                           assert block != null;
+                           telemetry.addData("Block 2nd X", block.x);
+
+                           if(block.x < 152) { //138
+                               telemetry.addData("Block", "is too far to the left.");
+                           } else if(block.x > 162) { //146
+                               telemetry.addData("Block", "is too far to the right.");
+                           } else {
+                               telemetry.addData("Block", "is centered!");
+                               telemetry.update();
+
+                               sleep(100000);
+                           }
+
+                           telemetry.addData("Block Y", block.y);
+                       }
+
+                       telemetry.update();
+                   }
+
+//                   rightFront.setPower(0);
+//                   rightBack.setPower(0);
+//                   leftFront.setPower(0);
+//                   leftBack.setPower(0);
+
+                   telemetry.addData("Piece", "centered!");
+                   telemetry.update();
+                   sleep(5000);
+               }
+
+               telemetry.update();
+            }
+        }
     }
 }
