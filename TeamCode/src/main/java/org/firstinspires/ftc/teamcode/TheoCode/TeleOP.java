@@ -103,38 +103,10 @@ public class TeleOP extends OpMode {
             huskyLens.selectAlgorithm(HuskyLens.Algorithm.OBJECT_CLASSIFICATION);
         }
         
-        if(driver.wasJustPressed(GamepadKeys.Button.DPAD_DOWN)) {
-            erect.setTargetPosition(-2800);
-            erect.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            erect.setPower(1);
-
-            telemetry.addData("erect Position", erect.getCurrentPosition());
-            telemetry.update();
-
-            if(erect.getCurrentPosition() <= -3200 &&  erect.getCurrentPosition() > -2800) {
-                erect.setPower(0);
-                bust.setPosition(0);
-                try {
-                    Thread.sleep(800);
-                } catch(Exception e) {
-                    System.out.println("Exception in sleeping with bucket.");
-                }
-                bust.setPosition(1);
-                try {
-                    Thread.sleep(600);
-                } catch(Exception e) {
-                    System.out.println("Exception in sleeping with bucket.");
-                }
-            }
-
-            erect.setTargetPosition(-100);
-            erect.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            erect.setPower(-1);
-
-            if(erect.getCurrentPosition() >= -50 && erect.getCurrentPosition() < -120) {
-                erect.setPower(0);
-            }
-
+        if(driver.wasJustPressed(GamepadKeys.Button.DPAD_UP)) {
+            bust.setPosition(0);
+        } else {
+            bust.setPosition(0.8);
         }
 
         if(intaking) {
@@ -244,12 +216,20 @@ public class TeleOP extends OpMode {
             }
             gear.setPosition(Constants.ServoConstants.gearTransfer);
 
-            if(clawIsOpen) {
-                intake.setPosition(Constants.ServoConstants.clawOpen);
-            } else {
-                intake.setPosition(Constants.ServoConstants.clawClosed);
+            if(!clawIsOpen) {
+                clawIsOpen = true;
             }
 
+        }
+
+        if(leftEX.getPosition() <= leftEX.getPosition() + 0.05) {
+            try {
+                Thread.sleep(800);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+
+            intake.setPosition(Constants.ServoConstants.clawOpen);
         }
 // MANUAL COMMANDS ARE HERE
 //        if(driver.wasJustPressed(GamepadKeys.Button.DPAD_UP)){
@@ -313,6 +293,17 @@ public class TeleOP extends OpMode {
             });
         } else if (gamepad1.left_bumper) {
             //Position: -120
+
+            if(bust.getPosition() == 0) {
+                bust.setPosition(0.8);
+
+                try {
+                    Thread.sleep(600);
+                } catch(Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
             CompletableFuture.runAsync(() -> {
                 erect.setTargetPosition(-100);
                 erect.setMode(DcMotor.RunMode.RUN_TO_POSITION);
