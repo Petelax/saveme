@@ -510,15 +510,15 @@ public class RoadRunnerUsingSparkFun extends LinearOpMode {
                         goToFirstPiece,
                         searchForPiece,
                         t ->  {CompletableFuture.runAsync(this::runAsync); return false;},
-                        goToBasket,
-                        goToSecondPiece,
-                        searchForPiece,
-                        t ->  {CompletableFuture.runAsync(this::runAsync); return false;},
-                        goToBasket,
-                        goToThirdPiece,
-                        searchForPiece,
-                        t ->  {CompletableFuture.runAsync(this::runAsync); return false;},
                         goToBasket
+//                        goToSecondPiece,
+//                        searchForPiece,
+//                        t ->  {CompletableFuture.runAsync(this::runAsync); return false;},
+//                        goToBasket,
+//                        goToThirdPiece,
+//                        searchForPiece,
+//                        t ->  {CompletableFuture.runAsync(this::runAsync); return false;},
+//                        goToBasket
 
                 )
         );
