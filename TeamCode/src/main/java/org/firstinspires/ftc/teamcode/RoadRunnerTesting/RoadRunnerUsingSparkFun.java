@@ -157,6 +157,82 @@ public class RoadRunnerUsingSparkFun extends LinearOpMode {
             rightBack.setPower(backRightPower);
         }
 
+        public void searchForPiece() {
+            //        while(opModeIsActive()) {
+//            if(huskyLens.blocks().length > 0) {
+//                HuskyLens.Block block = huskyLens.blocks().length == 0 ? null : huskyLens.blocks()[0];
+//                assert block != null;
+//                telemetry.addData("Block X", block.x);
+//
+//               if(block.x < 160) {
+//                   telemetry.addData("Block", "is too far to the left.");
+////                   leftFront.setPower(-0.35);
+////                   rightFront.setPower(0.35);
+////                   leftBack.setPower(0.35);
+////                   rightBack.setPower(-0.35);
+//               } else if(block.x > 170) {
+//                   telemetry.addData("Block", "is too far to the right.");
+////                   leftFront.setPower(0.35);
+////                   rightFront.setPower(-0.35);
+////                   leftBack.setPower(-0.35);
+////                   rightBack.setPower(0.35);
+//               } else if(block.x > 160 && block.x < 170) {
+////                   leftWrist.setPosition(0.27);
+////                   rightWrist.setPosition(0.27);
+//                   telemetry.addData("Block is centered! --> " + block.x, "Second Alignment beginning shortly.");
+//                   telemetry.update();
+//                   sleep(5000);
+//
+//                   while(opModeIsActive()) {
+//                       if(huskyLens.blocks().length > 0) {
+//                           block = huskyLens.blocks().length == 0 ? null : huskyLens.blocks()[0];
+//                           assert block != null;
+//                           telemetry.addData("Block Pos", block.y);
+//                           telemetry.update();
+//                           if(block.y > 200  ) {
+//                               break;
+//                           }
+//                       }
+//                   }
+//
+//                   while(opModeIsActive()) {
+//                       if(huskyLens.blocks().length > 0) {
+//                           block = huskyLens.blocks().length ==  0 ? null : huskyLens.blocks()[0];
+//                           assert block != null;
+//                           telemetry.addData("Block 2nd X", block.x);
+//
+//                           if(block.x < 152) { //138
+//                               telemetry.addData("Block", "is too far to the left.");
+//                           } else if(block.x > 162) { //146
+//                               telemetry.addData("Block", "is too far to the right.");
+//                           } else {
+//                               telemetry.addData("Block", "is centered!");
+//                               telemetry.update();
+//
+//                               sleep(100000);
+//                           }
+//
+//                           telemetry.addData("Block Y", block.y);
+//                       }
+//
+//                       telemetry.update();
+//                   }
+//
+////                   rightFront.setPower(0);
+////                   rightBack.setPower(0);
+////                   leftFront.setPower(0);
+////                   leftBack.setPower(0);
+//
+//                   telemetry.addData("Piece", "centered!");
+//                   telemetry.update();
+//                   sleep(5000);
+//               }
+//
+//               telemetry.update();
+//            }
+//        }
+        }
+
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
             rightExtend.setPosition(1);
@@ -166,80 +242,82 @@ public class RoadRunnerUsingSparkFun extends LinearOpMode {
 
             HuskyLens.Block block;
 
-            while(opModeIsActive()) {
-               if(huskyLens.blocks().length > 0) {
-                   block = huskyLens.blocks()[0];
-                   telemetry.addData("Block X", block.x);
-                   telemetry.addData("Block Y:", block.y);
-                   telemetry.update();
+//            while(opModeIsActive()) {
+//               if(huskyLens.blocks().length > 0) {
+//                   block = huskyLens.blocks()[0];
+//                   telemetry.addData("Block X", block.x);
+//                   telemetry.addData("Block Y:", block.y);
+//                   telemetry.update();
+//
+//                   sleep(5000);
+//
+//                   if(block.x < 160) { //140//0.34
+//                       setPower(-0.28, 0.28, 0.28, -0.28);
+//                   } else if(block.x > 170) {
+//                       setPower(0.28, -0.28, -0.28, 0.28);
+//                   } else {
+//                     setPower(0.3,0.3, 0.3, 0.3);
+//
+//                     while(opModeIsActive()) {
+//                       if(huskyLens.blocks().length > 0)  {
+//                           block = huskyLens.blocks()[0];
+//                           telemetry.addData("Y", block.y);
+//                           telemetry.update();
+//                           if(block.y > 180) {
+//                               break;
+//                           }
+//                       }
+//                     }
+//
+//                     setPower(0, 0, 0, 0);
+//
+//                     while(opModeIsActive()) {
+//                         if(huskyLens.blocks().length > 0) {
+//                             block = huskyLens.blocks().length == 0 ? null : huskyLens.blocks()[0];
+//
+//                             assert block != null;
+//                             if(block.x < 152) {
+//                                 rightFront.setPower(0.28);
+//                                 rightBack.setPower(0.28);
+//                                 leftFront.setPower(-0.28);
+//                                 leftBack.setPower(-0.28);
+//                             } else if(block.x > 162) {
+//                                 rightFront.setPower(-0.28);
+//                                 rightBack.setPower(-0.28);
+//                                 leftFront.setPower(0.28);
+//                                 leftBack.setPower(0.28);
+//                             } else {
+//                                 break;
+//                             }
+//                         }
+//                     }
+//
+//                     gear.setPosition(Constants.ServoConstants.gearDownDown);
+//                     sleep(500);
+//
+//                     leftWrist.setPosition(Constants.ServoConstants.wristDown);
+//                     rightWrist.setPosition(Constants.ServoConstants.wristDown);
+//                     sleep(500);
+//
+//                     intake.setPosition(Constants.ServoConstants.clawClosed);
+//                     sleep(500);
+//
+//                     leftWrist.setPosition(Constants.ServoConstants.wristTransfer);
+//                     rightWrist.setPosition(Constants.ServoConstants.wristTransfer);
+//                     sleep(200);
+//
+//                     leftExtend.setPosition(Constants.ServoConstants.minExtension);
+//                     rightExtend.setPosition(Constants.ServoConstants.minExtension);
+//                     gear.setPosition(Constants.ServoConstants.gearTransfer);
+//                     sleep(500);
+//
+//                     intake.setPosition(Constants.ServoConstants.clawOpen);
+//                     break;
+//                   }
+//               }
+//            }
 
-                   sleep(5000);
-
-                   if(block.x < 160) { //140//0.34
-                       setPower(-0.28, 0.28, 0.28, -0.28);
-                   } else if(block.x > 170) {
-                       setPower(0.28, -0.28, -0.28, 0.28);
-                   } else {
-                     setPower(0.3,0.3, 0.3, 0.3);
-
-                     while(opModeIsActive()) {
-                       if(huskyLens.blocks().length > 0)  {
-                           block = huskyLens.blocks()[0];
-                           telemetry.addData("Y", block.y);
-                           telemetry.update();
-                           if(block.y > 180) {
-                               break;
-                           }
-                       }
-                     }
-
-                     setPower(0, 0, 0, 0);
-
-                     while(opModeIsActive()) {
-                         if(huskyLens.blocks().length > 0) {
-                             block = huskyLens.blocks().length == 0 ? null : huskyLens.blocks()[0];
-
-                             assert block != null;
-                             if(block.x < 152) {
-                                 rightFront.setPower(0.28);
-                                 rightBack.setPower(0.28);
-                                 leftFront.setPower(-0.28);
-                                 leftBack.setPower(-0.28);
-                             } else if(block.x > 162) {
-                                 rightFront.setPower(-0.28);
-                                 rightBack.setPower(-0.28);
-                                 leftFront.setPower(0.28);
-                                 leftBack.setPower(0.28);
-                             } else {
-                                 break;
-                             }
-                         }
-                     }
-
-                     gear.setPosition(Constants.ServoConstants.gearDownDown);
-                     sleep(500);
-
-                     leftWrist.setPosition(Constants.ServoConstants.wristDown);
-                     rightWrist.setPosition(Constants.ServoConstants.wristDown);
-                     sleep(500);
-
-                     intake.setPosition(Constants.ServoConstants.clawClosed);
-                     sleep(500);
-
-                     leftWrist.setPosition(Constants.ServoConstants.wristTransfer);
-                     rightWrist.setPosition(Constants.ServoConstants.wristTransfer);
-                     sleep(200);
-
-                     leftExtend.setPosition(Constants.ServoConstants.minExtension);
-                     rightExtend.setPosition(Constants.ServoConstants.minExtension);
-                     gear.setPosition(Constants.ServoConstants.gearTransfer);
-                     sleep(500);
-
-                     intake.setPosition(Constants.ServoConstants.clawOpen);
-                     break;
-                   }
-               }
-            }
+            searchForPiece();
             return false;
         }
     }
@@ -247,7 +325,7 @@ public class RoadRunnerUsingSparkFun extends LinearOpMode {
     DcMotorEx leftFront, leftBack, rightFront, rightBack;
     DcMotor elevator;
     HuskyLens huskyLens;
-    Servo leftExtend, rightExtend, bucketServo, gear, intake, leftWrist, rightWrist, spin;
+    Servo leftExtend, rightExtend, bucketServo, gear, intake, leftWrist, rightWrist, spin, sweeper;
     FtcDashboard dashboard = FtcDashboard.getInstance();
     AtomicBoolean isRaised = new AtomicBoolean(false);
 
@@ -307,6 +385,7 @@ public class RoadRunnerUsingSparkFun extends LinearOpMode {
         leftWrist = hardwareMap.get(Servo.class, "leftWR");
         rightWrist = hardwareMap.get(Servo.class, "rightWR");
         spin = hardwareMap.get(Servo.class, "spin");
+        sweeper = hardwareMap.get(Servo.class, "sweeper");
 
         elevator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         elevator.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -381,7 +460,7 @@ public class RoadRunnerUsingSparkFun extends LinearOpMode {
         Actions.runBlocking(
                 new SequentialAction(
                         t -> {
-                            CompletableFuture.runAsync(() -> runAsync());
+                            CompletableFuture.runAsync(this::runAsync);
                             return false;
                         },
                         goToBasket,
@@ -398,98 +477,22 @@ public class RoadRunnerUsingSparkFun extends LinearOpMode {
 
                             telemetry.addData("Elevator Raised", "true");
                             telemetry.update();
-
-                            sleep(1000000000);
                             return false;
                         },
                         goToFirstPiece,
                         searchForPiece,
-                        t ->  {CompletableFuture.runAsync(() -> runAsync()); return false;},
+                        t ->  {CompletableFuture.runAsync(this::runAsync); return false;},
                         goToBasket,
                         goToSecondPiece,
                         searchForPiece,
-                        t ->  {CompletableFuture.runAsync(() -> runAsync()); return false;},
+                        t ->  {CompletableFuture.runAsync(this::runAsync); return false;},
                         goToBasket,
                         goToThirdPiece,
                         searchForPiece,
-                        t ->  {CompletableFuture.runAsync(() -> runAsync()); return false;},
+                        t ->  {CompletableFuture.runAsync(this::runAsync); return false;},
                         goToBasket
 
                 )
         );
-
-//        while(opModeIsActive()) {
-//            if(huskyLens.blocks().length > 0) {
-//                HuskyLens.Block block = huskyLens.blocks().length == 0 ? null : huskyLens.blocks()[0];
-//                assert block != null;
-//                telemetry.addData("Block X", block.x);
-//
-//               if(block.x < 160) {
-//                   telemetry.addData("Block", "is too far to the left.");
-////                   leftFront.setPower(-0.35);
-////                   rightFront.setPower(0.35);
-////                   leftBack.setPower(0.35);
-////                   rightBack.setPower(-0.35);
-//               } else if(block.x > 170) {
-//                   telemetry.addData("Block", "is too far to the right.");
-////                   leftFront.setPower(0.35);
-////                   rightFront.setPower(-0.35);
-////                   leftBack.setPower(-0.35);
-////                   rightBack.setPower(0.35);
-//               } else if(block.x > 160 && block.x < 170) {
-////                   leftWrist.setPosition(0.27);
-////                   rightWrist.setPosition(0.27);
-//                   telemetry.addData("Block is centered! --> " + block.x, "Second Alignment beginning shortly.");
-//                   telemetry.update();
-//                   sleep(5000);
-//
-//                   while(opModeIsActive()) {
-//                       if(huskyLens.blocks().length > 0) {
-//                           block = huskyLens.blocks().length == 0 ? null : huskyLens.blocks()[0];
-//                           assert block != null;
-//                           telemetry.addData("Block Pos", block.y);
-//                           telemetry.update();
-//                           if(block.y > 200  ) {
-//                               break;
-//                           }
-//                       }
-//                   }
-//
-//                   while(opModeIsActive()) {
-//                       if(huskyLens.blocks().length > 0) {
-//                           block = huskyLens.blocks().length ==  0 ? null : huskyLens.blocks()[0];
-//                           assert block != null;
-//                           telemetry.addData("Block 2nd X", block.x);
-//
-//                           if(block.x < 152) { //138
-//                               telemetry.addData("Block", "is too far to the left.");
-//                           } else if(block.x > 162) { //146
-//                               telemetry.addData("Block", "is too far to the right.");
-//                           } else {
-//                               telemetry.addData("Block", "is centered!");
-//                               telemetry.update();
-//
-//                               sleep(100000);
-//                           }
-//
-//                           telemetry.addData("Block Y", block.y);
-//                       }
-//
-//                       telemetry.update();
-//                   }
-//
-////                   rightFront.setPower(0);
-////                   rightBack.setPower(0);
-////                   leftFront.setPower(0);
-////                   leftBack.setPower(0);
-//
-//                   telemetry.addData("Piece", "centered!");
-//                   telemetry.update();
-//                   sleep(5000);
-//               }
-//
-//               telemetry.update();
-//            }
-//        }
     }
 }
