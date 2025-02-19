@@ -294,8 +294,8 @@ public class TeleOP extends OpMode {
         } else if (gamepad1.left_bumper) {
             //Position: -120
 
-            if(bust.getPosition() == 0) {
-                bust.setPosition(0.8);
+            if(bust.getPosition() != 1) {
+                bust.setPosition(1);
 
                 try {
                     Thread.sleep(600);
