@@ -28,12 +28,12 @@ public class LocalizationTest extends LinearOpMode {
 
 //        SparkFunOTOSDrive drive = new SparkFunOTOSDrive(hardwareMap, new Pose2d(41.5, 63, Math.PI));
 
-        SparkFunOTOSDrive drive = new SparkFunOTOSDrive(hardwareMap, new Pose2d(41.5, 63, Math.PI));
-
+        SparkFunOTOSDrive drive = new SparkFunOTOSDrive(hardwareMap, new Pose2d(41.5, 63, Math.toRadians(180)));
+//        SparkFunOTOSDrive drive = new SparkFunOTOSDrive(hardwareMap, new Pose2d(0, 0, Math.toRadians(0)));
         leftEx.setDirection(Servo.Direction.REVERSE);
 
-        leftEx.setPosition(Constants.ServoConstants.maxExtension);
-        rightEX.setPosition(Constants.ServoConstants.maxExtension);
+//        leftEx.setPosition(Constants.ServoConstants.maxExtension);
+//        rightEX.setPosition(Constants.ServoConstants.maxExtension);
 
         elevator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         elevator.setMode(DcMotor.RunMode.RUN_USING_ENCODER);

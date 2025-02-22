@@ -13,7 +13,7 @@ public class Constants {
         public static final double minExtension = 0.575;
 
         //WRIST CONSTANTS
-        public static final double wristDown = 0.4;
+        public static final double wristDown = 0.32; //0.4
         public static final double wristHover = 0.2;
         public static final double wristTransfer = 0;
 

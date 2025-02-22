@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.RoadRunnerTesting;
 
+import static org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity.TAG;
+
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -166,20 +168,20 @@ public class RoadRunnerUsingSparkFun extends LinearOpMode {
 
                if(block.x < 160) {
                    telemetry.addData("Block", "is too far to the left.");
-//                   leftFront.setPower(-0.35);
-//                   rightFront.setPower(0.35);
-//                   leftBack.setPower(0.35);
-//                   rightBack.setPower(-0.35);
+//                   leftFront.setPower(-0.2);
+//                   rightFront.setPower(0.2);
+//                   leftBack.setPower(0.2);
+//                   rightBack.setPower(-0.2);
 
-                   setPower(-0.35, 0.35, 0.35, -0.35);
+                   setPower(-0.2, 0.2, 0.2, -0.2);
                } else if(block.x > 170) {
                    telemetry.addData("Block", "is too far to the right.");
-//                   leftFront.setPower(0.35);
-//                   rightFront.setPower(-0.35);
-//                   leftBack.setPower(-0.35);
-//                   rightBack.setPower(0.35);
+//                   leftFront.setPower(0.2);
+//                   rightFront.setPower(-0.2);
+//                   leftBack.setPower(-0.2);
+//                   rightBack.setPower(0.2);
 
-                   setPower(0.35, -0.35, -0.35, 0.35);
+                   setPower(0.2, -0.2, -0.2, 0.2);
                } else if(block.x > 160 && block.x < 170) {
 //                   leftWrist.setPosition(0.27);
 //                   rightWrist.setPosition(0.27);
@@ -266,9 +268,8 @@ public class RoadRunnerUsingSparkFun extends LinearOpMode {
             rightExtend.setPosition(1);
             leftExtend.setPosition(1);
             gear.setPosition(Constants.ServoConstants.gearDown);
-            intake.setPosition(Constants.ServoConstants.clawOpen);
 
-            HuskyLens.Block block;
+            HuskyLens.Block block = null;
 
 //            while(opModeIsActive()) {
 //               if(huskyLens.blocks().length > 0) {
@@ -345,7 +346,54 @@ public class RoadRunnerUsingSparkFun extends LinearOpMode {
 //               }
 //            }
 
-            searchForPiece();
+//            searchForPiece();
+
+           while(opModeIsActive()) {
+               if(huskyLens.blocks().length > 0) {
+                  block = huskyLens.blocks()[0];
+                  break;
+               }
+           }
+
+            telemetry.addData("Block X", block.x);
+            telemetry.update();
+
+
+            double millis = 0.5 * (block.x > 170 ? block.x - 170 : 170 - block.x);
+
+           setPower(0, 0, 0,0);
+           if(block.x > 170 && block.x < 250) {
+               setPower(-0.3, 0.3, 0.3, -0.3);
+           } else if(block.x > 275) {
+               setPower(0.3, -0.3, -0.3, 0.3);
+           }
+           sleep((int) millis);
+           setPower(0, 0, 0, 0);
+            gear.setPosition(Constants.ServoConstants.gearDownDown);
+            sleep(500);
+
+            leftWrist.setPosition(Constants.ServoConstants.wristDown);
+            rightWrist.setPosition(Constants.ServoConstants.wristDown);
+            sleep(500);
+
+            intake.setPosition(Constants.ServoConstants.clawClosed);
+            sleep(500);
+
+            leftWrist.setPosition(Constants.ServoConstants.wristTransfer);
+            rightWrist.setPosition(Constants.ServoConstants.wristTransfer);
+            sleep(200);
+
+            leftExtend.setPosition(Constants.ServoConstants.minExtension);
+            rightExtend.setPosition(Constants.ServoConstants.minExtension);
+            gear.setPosition(Constants.ServoConstants.gearTransfer);
+            sleep(500);
+
+            intake.setPosition(Constants.ServoConstants.clawOpen);
+
+            sleep(600);
+
+            Log.i(TAG, "Go to this point in the method.");
+
             return false;
         }
     }
@@ -355,10 +403,11 @@ public class RoadRunnerUsingSparkFun extends LinearOpMode {
     HuskyLens huskyLens;
     Servo leftExtend, rightExtend, bucketServo, gear, intake, leftWrist, rightWrist, spin, sweeper;
     FtcDashboard dashboard = FtcDashboard.getInstance();
-    AtomicBoolean isRaised = new AtomicBoolean(false);
+    volatile boolean isRaised = false;
 
     public void runAsync() {
-        isRaised.set(false);
+
+        isRaised = false;
 
         gear.setPosition(Constants.ServoConstants.gearDown);
         rightExtend.setPosition(Constants.ServoConstants.maxExtension);
@@ -379,26 +428,30 @@ public class RoadRunnerUsingSparkFun extends LinearOpMode {
             }
         }
 
-        sleep(1000);
+        sleep(2000);
 
-        bucketServo.setPosition(0);
+        bucketServo.setPosition(0.15);
 
         sleep(1500);
 
         bucketServo.setPosition(1);
 
-        sleep(300);
+        sleep(700);
 
         elevator.setTargetPosition(-110);
         elevator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         elevator.setPower(-1);
 
-        isRaised.set(true);
+        isRaised = true;
+
+        Log.i(TAG, "got to this point.");
     }
 
 
     @Override
     public void runOpMode() throws InterruptedException {
+        AtomicBoolean raised = new AtomicBoolean(false);
+
         leftFront = hardwareMap.get(DcMotorEx.class, "left_front");
         leftBack = hardwareMap.get(DcMotorEx.class, "left_back");
         rightBack = hardwareMap.get(DcMotorEx.class, "right_back");
@@ -438,14 +491,10 @@ public class RoadRunnerUsingSparkFun extends LinearOpMode {
         rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        Pose2d initialPose = new Pose2d(41.9, 63, Math.PI);
+        Pose2d initialPose = new Pose2d(41.9, 63, Math.toRadians(180));
         SparkFunOTOSDrive drive = new SparkFunOTOSDrive(hardwareMap, initialPose);
         TrajectoryActionBuilder tab1 = drive.actionBuilder(initialPose);
 
-        LiftOrLowerElevator raiseElevator = new LiftOrLowerElevator("raise");
-        LiftOrLowerElevator lowerElevator = new LiftOrLowerElevator("lower");
-        ExtensionAndRetraction retract = new ExtensionAndRetraction("retract");
-        ExtensionAndRetraction extend = new ExtensionAndRetraction("extend");
         SearchForPiece searchForPiece = new SearchForPiece();
 
         huskyLens.selectAlgorithm(HuskyLens.Algorithm.COLOR_RECOGNITION);
@@ -453,29 +502,48 @@ public class RoadRunnerUsingSparkFun extends LinearOpMode {
         telemetry.addData("HuskyLens Initialized", huskyLens.knock());
         telemetry.update();
 
+        intake.setPosition(Constants.ServoConstants.clawOpen);
+
         waitForStart();
 
         Action goToBasket = tab1.endTrajectory().fresh()
 //                .strafeTo(new Vector2d(51.6544, 54.9196)) //Y: 54.9196, X: 50.6544
 //                .strafeTo(new Vector2d(49.6812, 51.4353))
-                .strafeTo(new Vector2d(47, 51))
-                .turnTo(-141)
+                .strafeTo(new Vector2d(47.01, 51))
+                .turnTo(Math.toRadians(-141))
+                .build();
+
+        Action goToBasket2 = tab1.endTrajectory().fresh()
+//                .strafeTo(new Vector2d(51.6544, 54.9196)) //Y: 54.9196, X: 50.6544
+//                .strafeTo(new Vector2d(49.6812, 51.4353))
+                .strafeTo(new Vector2d(47.01, 51))
+                .turnTo(Math.toRadians(-143))
+                .build();
+
+        Action goToBasket3 = tab1.endTrajectory().fresh()
+//                .strafeTo(new Vector2d(51.6544, 54.9196)) //Y: 54.9196, X: 50.6544
+//                .strafeTo(new Vector2d(49.6812, 51.4353))
+                .strafeTo(new Vector2d(46.3, 51))
+                .turnTo(Math.toRadians(-143))
                 .build();
 
         Action goToFirstPiece = tab1.endTrajectory().fresh()
-                .strafeTo(new Vector2d(39, 53))
+//                .turnTo(Math.toRadians(-88))
+//                .waitSeconds(0.2)
+                .turnTo(Math.toRadians(-88))
                 .waitSeconds(0.5)
-                .turnTo(-108.2257)
+                .strafeTo(new Vector2d(43.1, 55.4))
                 .build();
 //
 ////        new Vector2d(39.1923, 55.0998)
 //
         Action goToSecondPiece = tab1.endTrajectory().fresh()
-                .splineTo(new Vector2d(0, 0), Math.toRadians(35))
+                .strafeTo(new Vector2d(46.0888, 55.4))
+                .turnTo(-88)
                 .build();
 
         Action goToThirdPiece = tab1.endTrajectory().fresh()
-                .splineTo(new Vector2d(0, 0), Math.toRadians(35))
+                .strafeTo(new Vector2d(0, 0))
                 .build();
 
 //        CompletableFuture.runAsync(() -> {
@@ -488,31 +556,165 @@ public class RoadRunnerUsingSparkFun extends LinearOpMode {
         Actions.runBlocking(
                 new SequentialAction(
                         t -> {
-                            CompletableFuture.runAsync(this::runAsync);
+                            raised.set(false);
+
+                            gear.setPosition(Constants.ServoConstants.gearDown);
+                            rightExtend.setPosition(Constants.ServoConstants.maxExtension);
+                            leftExtend.setPosition(Constants.ServoConstants.maxExtension);
+                            leftWrist.setPosition(Constants.ServoConstants.wristHover);
+                            rightWrist.setPosition(Constants.ServoConstants.wristHover);
+                            spin.setPosition(Constants.ServoConstants.spinCenter);
+
+                            sleep(200);
+
+                            CompletableFuture.runAsync(() -> {
+                                elevator.setTargetPosition(-3000); //-2790, -2960
+                                elevator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                                elevator.setPower(1);
+
+                                sleep(2000);
+
+                                bucketServo.setPosition(0.15);
+
+                                sleep(1500);
+
+                                bucketServo.setPosition(1);
+
+                                sleep(700);
+
+                                elevator.setTargetPosition(-110);
+                                elevator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                                elevator.setPower(-1);
+
+                                sleep(200);
+
+                                raised.set(true);
+                            });
                             return false;
                         },
                         goToBasket,
                         t -> {
-                            Log.i(RoadRunnerUsingSparkFun.class.getName(), "IsRaised: " + isRaised.get());
-                            while (opModeIsActive()) {
-                                if (isRaised.get()) {
+                            while(opModeIsActive()) {
+                                if(raised.get()) {
                                     break;
-                                } else {
-                                    telemetry.addData("Elevator", "has not raised");
-                                    telemetry.update();
                                 }
                             }
-
-                            telemetry.addData("Elevator Raised", "true");
-                            telemetry.update();
                             return false;
                         },
                         goToFirstPiece,
+//                        t -> {
+//                            intake.setPosition(Constants.ServoConstants.clawOpen);
+//                            sleep(300);
+//                            gear.setPosition(Constants.ServoConstants.gearDownDown);
+//                            sleep(500);
+//
+//                            leftWrist.setPosition(Constants.ServoConstants.wristDown);
+//                            rightWrist.setPosition(Constants.ServoConstants.wristDown);
+//                            sleep(500);
+//
+//                            intake.setPosition(Constants.ServoConstants.clawClosed);
+//                            sleep(500);
+//
+//                            leftWrist.setPosition(Constants.ServoConstants.wristTransfer);
+//                            rightWrist.setPosition(Constants.ServoConstants.wristTransfer);
+//                            sleep(200);
+//
+//                            leftExtend.setPosition(Constants.ServoConstants.minExtension);
+//                            rightExtend.setPosition(Constants.ServoConstants.minExtension);
+//                            gear.setPosition(Constants.ServoConstants.gearTransfer);
+//                            sleep(500);
+//
+//                            intake.setPosition(Constants.ServoConstants.clawOpen);
+//                            return false;
+//                        }
                         searchForPiece,
-                        t ->  {CompletableFuture.runAsync(this::runAsync); return false;},
-                        goToBasket
-//                        goToSecondPiece,
-//                        searchForPiece,
+                        t -> {
+                            raised.set(false);
+
+                            gear.setPosition(Constants.ServoConstants.gearDown);
+                            rightExtend.setPosition(Constants.ServoConstants.maxExtension);
+                            leftExtend.setPosition(Constants.ServoConstants.maxExtension);
+                            leftWrist.setPosition(Constants.ServoConstants.wristHover);
+                            rightWrist.setPosition(Constants.ServoConstants.wristHover);
+                            spin.setPosition(Constants.ServoConstants.spinCenter);
+
+                            sleep(200);
+
+                            CompletableFuture.runAsync(() -> {
+                                elevator.setTargetPosition(-2960); //-2790
+                                elevator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                                elevator.setPower(1);
+
+                                sleep(2000);
+
+                                bucketServo.setPosition(0.15);
+
+                                sleep(1500);
+
+                                bucketServo.setPosition(1);
+
+                                sleep(700);
+
+                                elevator.setTargetPosition(-110);
+                                elevator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                                elevator.setPower(-1);
+
+                                sleep(400);
+
+                                raised.set(true);
+                            });
+                            return false;
+                        },
+                        goToBasket2,
+                        t -> {
+                            while(opModeIsActive()) {
+                                if(raised.get()) {
+                                    break;
+                                }
+                            }
+                            return false;
+                        },
+                        goToSecondPiece,
+                        searchForPiece,
+
+                        t -> {
+                            raised.set(false);
+
+                            gear.setPosition(Constants.ServoConstants.gearDown);
+                            rightExtend.setPosition(Constants.ServoConstants.maxExtension);
+                            leftExtend.setPosition(Constants.ServoConstants.maxExtension);
+                            leftWrist.setPosition(Constants.ServoConstants.wristHover);
+                            rightWrist.setPosition(Constants.ServoConstants.wristHover);
+                            spin.setPosition(Constants.ServoConstants.spinCenter);
+
+                            sleep(200);
+
+                            CompletableFuture.runAsync(() -> {
+                                elevator.setTargetPosition(-2960); //-2790
+                                elevator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                                elevator.setPower(1);
+
+                                sleep(2000);
+
+                                bucketServo.setPosition(0.15);
+
+                                sleep(1500);
+
+                                bucketServo.setPosition(1);
+
+                                sleep(700);
+
+                                elevator.setTargetPosition(-110);
+                                elevator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                                elevator.setPower(-1);
+
+                                sleep(400);
+
+                                raised.set(true);
+                            });
+                            return false;
+                        },
+                        goToBasket3
 //                        t ->  {CompletableFuture.runAsync(this::runAsync); return false;},
 //                        goToBasket,
 //                        goToThirdPiece,
